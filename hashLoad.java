@@ -7,24 +7,22 @@ public class hashLoad
     private static int hashSize = 3145739;
     private static int recordSize = 275;
     static int pageSize;
+    // time computation
     static long start;
-
     public static void main(String[] args)
     {
         RandomAccessFile inputFile = null;
         RandomAccessFile outputFile = null;
-        int pageOffset = 0;
-        int recordOffset = 0;
+        int pageCounter = 0;
         int noRecords = pageSize / recordSize;
-        int remainingPages = pageSize % recordSize;
         int currentRecord = 0;
         byte[] emptyArray = new byte[200];
-
         if(args.length == 1)
         {
             String page = args[0];
             try
             {
+                // ensure only int is accepted as parameter
                 pageSize = Integer.parseInt(page);
             } catch (IndexOutOfBoundsException e) {
                 e.printStackTrace();
@@ -34,40 +32,40 @@ public class hashLoad
         {
             System.out.println("Page size must be int");
         }
-
         try 
         {
+            // start timer
             start = System.currentTimeMillis();
             System.out.println("Creating hash");
-
+            // declare input and output files
             inputFile = new RandomAccessFile("heap." + pageSize + ".dat", "r");
             outputFile = new RandomAccessFile("hash." + pageSize + ".dat", "rw");
-            
+            // fill hash file
             for (int i = 0; i < hashSize; i++)
             {
                 outputFile.writeInt(-1);
             }
-
             while(true)
             {
-                int currentPos = (currentRecord * recordSize) + (pageOffset * pageSize);
+                int currentPos = (currentRecord * recordSize) + (pageCounter * pageSize);
                 // find position in file to write to
                 inputFile.seek(currentPos);
-                byte[] readByte = new byte[200];
-                inputFile.read(readByte);
-
-                if(Arrays.equals(readByte, emptyArray))
+                // create byte array of size 200(name)
+                byte[] buffer = new byte[200];
+                inputFile.read(buffer);
+                // if byte array is empty then break
+                if(Arrays.equals(buffer, emptyArray))
                 {
                     break;
                 }
-                int hashName = createHash(readByte) * 4;
-                int hashOffset = hashName;
+                int hashName = createHash(buffer) * 4;
+                int hashCount = hashName;
                 while(true)
                 {
-                    outputFile.seek(hashOffset);
+                    outputFile.seek(hashCount);
                     int bucket = outputFile.readInt();
-                    outputFile.seek(hashOffset);
-
+                    outputFile.seek(hashCount);
+                    // check if bucket has been already filled, if -1 means not filled
                     if(bucket == -1)
                     {
                         outputFile.writeInt(currentPos);
@@ -75,24 +73,25 @@ public class hashLoad
                     }
                     else
                     {
-                        hashOffset = hashOffset + 4;
-
-                        if(hashOffset > (hashSize - 1) * 4)
+                        hashCount = hashCount + 4;
+                        if(hashCount > (hashSize - 1) * 4)
                         {
-                            hashOffset = 0;
+                            hashCount = 0;
                         }
-                        if(hashOffset == hashName)
+                        if(hashCount == hashName)
                         {
-                            System.out.println("hash file is full")
+                            System.out.println("hash file is full");
                             System.exit(0);
                         }
                     }
                 }
+                // increment current record counter
                 currentRecord++;
+                // reset currentRecord to 0 and increment the page count
                 if(currentRecord == noRecords)
                 {
                     currentRecord = 0;
-                    pageOffset++;
+                    pageCounter++;
                 }
             }
         } catch (FileNotFoundException e)
@@ -117,7 +116,7 @@ public class hashLoad
             }
         }
     }
-
+    // method to get hash position
     public static int createHash(byte[] arr)
     {
         return Math.abs((Arrays.hashCode(arr)) % hashSize);
