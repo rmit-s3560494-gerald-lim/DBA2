@@ -30,7 +30,7 @@ public class hashLoad
         }
         else
         {
-            System.out.println("Page size must be int");
+            System.err.println("Page size must be int");
         }
         try 
         {
@@ -80,7 +80,7 @@ public class hashLoad
                         }
                         if(hashCount == hashName)
                         {
-                            System.out.println("hash file is full");
+                            System.err.println("hash file is full");
                             System.exit(0);
                         }
                     }
