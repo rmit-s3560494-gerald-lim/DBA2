@@ -58,13 +58,13 @@ public class hashLoad
                 {
                     break;
                 }
-                int hashName = createHash(buffer) * 4;
-                int hashCount = hashName;
+                int startpos = createHash(buffer) * 4;
+                int currpos = startpos;
                 while(true)
                 {
-                    outputFile.seek(hashCount);
+                    outputFile.seek(currpos);
                     int bucket = outputFile.readInt();
-                    outputFile.seek(hashCount);
+                    outputFile.seek(currpos);
                     // check if bucket has been already filled, if -1 means not filled
                     if(bucket == -1)
                     {
@@ -73,12 +73,12 @@ public class hashLoad
                     }
                     else
                     {
-                        hashCount = hashCount + 4;
-                        if(hashCount > (hashSize - 1) * 4)
+                        currpos = currpos + 4;
+                        if(currpos > (hashSize - 1) * 4)
                         {
-                            hashCount = 0;
+                            currpos = 0;
                         }
-                        if(hashCount == hashName)
+                        if(currpos == startpos)
                         {
                             System.err.println("hash file is full");
                             System.exit(0);
