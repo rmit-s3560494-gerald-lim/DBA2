@@ -4,7 +4,6 @@ import java.util.*;
 public class hashQuery
 {
     private static int hashSize = 3145739;
-    private static int recordSize = 275;
     static int pageSize;
     static long start;
     static String query;
@@ -41,21 +40,21 @@ public class hashQuery
             heapFile = new RandomAccessFile("heap." + pageSize + ".dat", "r");
             int startpos = createHash(bQuery) * 4;
             int currpos = startpos;
-            
-            while(true)
+            boolean search = true;
+            while(search == true)
             {
                 hashFile.seek(startpos);
                 int p = hashFile.readInt();
-                byte[] heapName = new byte[200];
+                byte[] bName = new byte[200];
                 if(p > -1)
                 {
                     heapFile.seek(p);
-                    heapFile.read(heapName);
-                    if(Arrays.equals(heapName, bQuery))
+                    heapFile.read(bName);
+                    if(Arrays.equals(bName, bQuery))
                     {
                         try 
                         {
-                            String name = new String(heapName);
+                            String name = new String(bName);
                             String BN_NAME;
                             String BN_STATUS;
                             String BN_REG_DT;
@@ -66,34 +65,34 @@ public class hashQuery
                             String BN_ABN;
                             BN_NAME = name;
                             heapFile.seek(p + 200);
-                            byte[] readStatus = new byte[12];
-                            BN_STATUS = new String(readStatus);
+                            byte[] status = new byte[12];
+                            BN_STATUS = new String(status);
                             heapFile.seek(p + 200 + 12);
-                            byte[] readRegDate = new byte[10];
-                            heapFile.read(readRegDate);
-                            BN_REG_DT = new String(readRegDate);
+                            byte[] regdate = new byte[10];
+                            heapFile.read(regdate);
+                            BN_REG_DT = new String(regdate);
                             heapFile.seek(p + 200 + 12 + 10);
-                            byte[] readCancelDate = new byte[10];
-                            heapFile.read(readCancelDate);
-                            BN_CANCEL_DT = new String(readCancelDate);
+                            byte[] canceldate = new byte[10];
+                            heapFile.read(canceldate);
+                            BN_CANCEL_DT = new String(canceldate);
                             heapFile.seek(p + 200 + 12 + 10 + 10);
-                            byte[] readRenewDate = new byte[10];
-                            heapFile.read(readRenewDate);
-                            BN_RENEW_DT = new String(readRenewDate);
+                            byte[] renewdate = new byte[10];
+                            heapFile.read(renewdate);
+                            BN_RENEW_DT = new String(renewdate);
                             heapFile.seek(p + 200 + 12 + 10 + 10 + 10);
-                            byte[] readStateNum = new byte[10];
-                            heapFile.read(readStateNum);
-                            BN_STATE_NUM = new String(readStateNum);
+                            byte[] statenum = new byte[10];
+                            heapFile.read(statenum);
+                            BN_STATE_NUM = new String(statenum);
                             heapFile.seek(p + 200 + 12 + 10 + 10 + 10 + 10);
-                            byte[] readStateReg = new byte[3];
-                            BN_STATE_OF_REG = new String(readStateReg);
+                            byte[] statereg = new byte[3];
+                            BN_STATE_OF_REG = new String(statereg);
                             heapFile.seek(p + 200 + 12 + 10 + 10 + 10 +10 + 3);
-                            byte[] readABN = new byte[20];
-                            heapFile.read(readABN);
-                            BN_ABN = new String(readABN);
+                            byte[] abn = new byte[20];
+                            heapFile.read(abn);
+                            BN_ABN = new String(abn);
 
                             long end = System.currentTimeMillis();
-                            System.out.println("Time taken" + (end - start) + "ms" +
+                            System.out.println("Time taken: " + (end - start) + "ms" +
                                 "\nBN_NAME: " + BN_NAME +
                                 "\nBN_STATUS: " + BN_STATUS +
                                 "\nBN_REG_DT: " + BN_REG_DT +
@@ -103,6 +102,7 @@ public class hashQuery
                                 "\nBN_STATE_OF_REG: " + BN_STATE_OF_REG +
                                 "\nBN_ABN: " + BN_ABN +
                                 "\n");
+                            search = false;
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
