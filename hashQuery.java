@@ -60,7 +60,7 @@ public class hashQuery
                 int p = hashFile.readInt();
                 // first var which is business name is 200 bytes long
                 byte[] bName = new byte[200];
-                // if pointer matches -1 (it should since I made the whole file -1)
+                // if pointer valid
                 if(p > -1)
                 {
                     // seek at pointer
